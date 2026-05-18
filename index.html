@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  
+
   <body>
     <form method="post" style="display: flex; flex-direction: column; gap: 10px; max-width: 300px">
       <label>Cheese<input type="checkbox" name="ingredient[]" value="cheese" /></label>
@@ -22,14 +22,22 @@
     </form>
   </body>
   <script>
-
     const form = document.querySelector("form");
 
-    function whenTheFormWillSubmit(event) {
+    async function whenTheFormWillSubmit(event) {
       event.preventDefault();
       const list = document.querySelectorAll('input[type="checkbox"]:checked');
-      const ingredients = Array.from(list).map((checkbox) => checkbox.value)
-      console.log(data);
+      const ingredients = Array.from(list).map((checkbox) => checkbox.value);
+      const body = JSON.stringify(ingredients);
+      const response = await fetch("https://httpbin.org/post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body,
+      });
+      const reply = await response.json();
+      console.log(reply.json);
     }
 
     form.addEventListener("submit", whenTheFormWillSubmit);

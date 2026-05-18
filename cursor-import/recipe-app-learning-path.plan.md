@@ -81,8 +81,7 @@ You only need a single endpoint the browser calls, e.g. `POST /api/recipes.php` 
 
 7. **Persist “history” across refresh**  
    You have two learning branches; pick one for v1:
-
-   - **Browser-only history:** `localStorage` stores an array of past runs (each run: time, selected products, recipes). Easiest to ship.  
+   - **Browser-only history:** `localStorage` stores an array of past runs (each run: time, selected products, recipes). Easiest to ship.
    - **Server-side history:** A file or SQLite on disk; browser loads `/history`. More moving parts.
 
    Given your “log of what I already saw” goal, **localStorage** matches your earlier instinct and keeps the server stateless.
@@ -97,23 +96,23 @@ You only need a single endpoint the browser calls, e.g. `POST /api/recipes.php` 
 
 ## Maximum level (what you can defer)
 
-- **Defer:** React/Vue/Svelte until you can do the flow in vanilla JS—or adopt one immediately if your course requires it; then the *topics* stay the same, only the UI layer changes.  
-- **Defer:** Laravel/Symfony for v1 if plain PHP + one endpoint already matches how you host homework; adopt a framework when routing, middleware, and structure pay off.  
-- **Defer:** Postgres, Docker, CI/CD, caching layers, rate limiting (add when you expose the app publicly).  
+- **Defer:** React/Vue/Svelte until you can do the flow in vanilla JS—or adopt one immediately if your course requires it; then the _topics_ stay the same, only the UI layer changes.
+- **Defer:** Laravel/Symfony for v1 if plain PHP + one endpoint already matches how you host homework; adopt a framework when routing, middleware, and structure pay off.
+- **Defer:** Postgres, Docker, CI/CD, caching layers, rate limiting (add when you expose the app publicly).
 - **Defer:** “Making the model always factual”—you already accepted generative variability; focus on **reliable plumbing** (network, JSON, storage) first.
 
 ---
 
 ## Milestone map: “what to think about when”
 
-| Moment | You should be able to answer |
-|--------|------------------------------|
-| After static HTML | Where do the 10 labels live? How does submit fire? |
-| After DOM JS | What exact array do I send when 3 boxes are checked? |
-| After `fetch` | What JSON does my server return on success vs error? |
-| After LLM call | Where is the key, and what is the raw response string before UI? |
-| After persistence | On load, do I read `localStorage`, parse JSON, and render a timeline? |
-| After polish | What happens if the model returns malformed JSON or fewer than 10 items? |
+| Moment            | You should be able to answer                                             |
+| ----------------- | ------------------------------------------------------------------------ |
+| After static HTML | Where do the 10 labels live? How does submit fire?                       |
+| After DOM JS      | What exact array do I send when 3 boxes are checked?                     |
+| After `fetch`     | What JSON does my server return on success vs error?                     |
+| After LLM call    | Where is the key, and what is the raw response string before UI?         |
+| After persistence | On load, do I read `localStorage`, parse JSON, and render a timeline?    |
+| After polish      | What happens if the model returns malformed JSON or fewer than 10 items? |
 
 ---
 
@@ -131,4 +130,4 @@ No extra folders until one file feels crowded—then split `routes` or `static` 
 
 ## How this plan differs from “AI plan preparation”
 
-You are not being asked to master prompt libraries first. The learning order is **UI → HTTP → server secrets → model HTTP → structured data → storage → edge cases**. Prompt wording becomes something you adjust *after* the pipe works.
+You are not being asked to master prompt libraries first. The learning order is **UI → HTTP → server secrets → model HTTP → structured data → storage → edge cases**. Prompt wording becomes something you adjust _after_ the pipe works.
