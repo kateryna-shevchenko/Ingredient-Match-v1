@@ -29,7 +29,7 @@
       const list = document.querySelectorAll('input[type="checkbox"]:checked');
       const ingredients = Array.from(list).map((checkbox) => checkbox.value);
       const body = JSON.stringify(ingredients);
-      const response = await fetch("https://httpbin.org/post", {
+      const response = await fetch("api/recipes.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,11 @@
         body,
       });
       const reply = await response.json();
-      console.log(reply.json);
+      if (!response.ok) {
+        console.error(reply.error);
+        return;
+      }
+      console.log(reply.recipes);
     }
 
     form.addEventListener("submit", whenTheFormWillSubmit);
