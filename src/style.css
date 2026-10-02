@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --color-ink: #441d0f;
+  --color-muted: #7a4a38;
+  --color-paper: #fff8f2;
+  --color-surface: #f4e6da;
+  --color-accent: #ec8a25;
+  --color-roast: #441d0f;
+  --color-papaya: #ae3d1d;
+  --color-warn: #b4032c;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}

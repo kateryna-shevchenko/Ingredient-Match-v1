@@ -2,48 +2,157 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Ingredient Match</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
-
-  <body>
-    <form method="post" style="display: flex; flex-direction: column; gap: 10px; max-width: 300px">
-      <label>Cheese<input type="checkbox" name="ingredient[]" value="cheese" /></label>
-      <label>Banana<input type="checkbox" name="ingredient[]" value="banana" /></label>
-      <label>Eggs<input type="checkbox" name="ingredient[]" value="eggs" /></label>
-      <label>Oats<input type="checkbox" name="ingredient[]" value="oats" /></label>
-      <label>Onion<input type="checkbox" name="ingredient[]" value="onion" /></label>
-      <label>Tomato<input type="checkbox" name="ingredient[]" value="tomato" /></label>
-      <label>Cucumber<input type="checkbox" name="ingredient[]" value="cucumber" /></label>
-      <label>Chicken<input type="checkbox" name="ingredient[]" value="chicken" /></label>
-      <label>Beef<input type="checkbox" name="ingredient[]" value="beef" /></label>
-      <label>Pork<input type="checkbox" name="ingredient[]" value="pork" /></label>
-      <button type="submit">Submit</button>
-    </form>
+  <body class="m-0 min-h-svh overflow-x-clip bg-surface font-sans text-base leading-normal text-ink">
+    <div class="min-h-svh" data-app data-first="welcome">
+      <a
+        class="absolute start-3 top-3 z-20 -translate-y-[200%] rounded-lg bg-paper px-3 py-2 focus:translate-y-0"
+        href="#results"
+        >Skip to recipes</a
+      >
+      <section class="peer grid min-h-svh bg-papaya p-0 text-paper" data-view="welcome">
+        <div
+          class="relative grid h-svh max-h-svh content-end place-items-center overflow-hidden px-[max(1.15rem,env(safe-area-inset-right))] pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1.15rem,env(safe-area-inset-bottom))] ps-[max(1.15rem,env(safe-area-inset-left))] min-[40rem]:content-center"
+        >
+          <figure class="absolute inset-0 m-0 block overflow-hidden">
+            <img
+              class="absolute inset-0 block size-full max-w-none object-cover object-center"
+              src="/assets/welcome-produce.png"
+              alt="A market spread of fruits and vegetables"
+              width="1024"
+              height="1024"
+            />
+          </figure>
+          <div
+            class="relative z-1 grid w-full max-w-md gap-3.5 justify-items-stretch rounded-[1.45rem] bg-[#a1391c] p-5 shadow-[0_22px_48px_#441d0f66] min-[40rem]:px-7 min-[40rem]:pt-6 min-[40rem]:pb-5"
+          >
+            <div>
+              <h1
+                class="m-0 max-w-[10ch] text-[clamp(2.15rem,1.35rem+4.6vw,4.15rem)] leading-none font-bold tracking-tight text-paper"
+              >
+                Cook like a chef
+              </h1>
+              <p class="max-w-[26ch] text-[clamp(0.98rem,0.92rem+0.45vw,1.2rem)] text-paper/90">
+                Cook professional dishes right in your kitchen.
+              </p>
+            </div>
+            <button
+              class="mt-1 inline-flex min-h-14 w-full items-center justify-center rounded-[1.25rem] border-0 bg-roast px-4 font-semibold text-paper hover:-translate-y-0.5 hover:bg-[#5a2816] hover:shadow-[0_12px_24px_#441d0f55]"
+              type="button"
+              data-start
+            >
+              Get started
+            </button>
+          </div>
+        </div>
+      </section>
+      <div
+        class="grid max-h-svh min-h-svh grid-rows-[1fr_auto] overflow-hidden peer-[:not([hidden])]:hidden lg:grid-cols-[11rem_1fr] lg:grid-rows-1"
+      >
+        <section
+          class="mx-auto grid w-full min-h-0 min-w-0 max-w-[86rem] content-start gap-[clamp(0.85rem,2.4vw,1.6rem)] overflow-auto p-[clamp(0.85rem,2.4vw,1.6rem)] lg:col-start-2 lg:row-start-1 lg:grid-cols-[minmax(16rem,0.92fr)_minmax(18rem,1.15fr)] lg:items-start"
+          data-view="home"
+          hidden
+        >
+          <div
+            class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)] lg:sticky lg:top-3 lg:max-h-[calc(100svh-1.25rem)] lg:overflow-auto"
+          >
+            <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
+              What do you want to cook today?
+            </h2>
+            <form class="flex flex-wrap gap-2" data-add-form>
+              <input
+                class="min-h-11 min-w-48 flex-1 rounded-full border-0 bg-surface px-4 text-inherit"
+                data-add-input
+                placeholder="Product"
+                autocomplete="off"
+              />
+              <button
+                class="min-h-11 shrink-0 rounded-full border-0 bg-roast px-4 font-semibold text-white hover:bg-papaya"
+                type="submit"
+              >
+                Add
+              </button>
+            </form>
+            <p class="text-muted" data-pantry-note hidden></p>
+            <div class="my-3 flex flex-wrap gap-1.5" data-chips></div>
+            <p class="text-muted" data-suggest-note hidden></p>
+            <button
+              class="sticky bottom-1 z-3 inline-flex min-h-11 w-full items-center justify-center rounded-full border-0 bg-accent px-4 font-bold text-roast hover:-translate-y-0.5 hover:bg-[#d97a1c] hover:text-white disabled:translate-y-0 disabled:cursor-default disabled:opacity-55 disabled:shadow-none lg:static"
+              type="button"
+              data-suggest
+            >
+              Make something with these
+            </button>
+          </div>
+          <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]" id="results">
+            <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
+              From this kitchen
+            </h2>
+            <p class="text-muted" data-count></p>
+            <div
+              class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,16.5rem),1fr))] gap-[clamp(0.65rem,2vw,1.1rem)]"
+              data-results
+            ></div>
+          </div>
+        </section>
+        <section
+          class="mx-auto grid w-full min-h-0 min-w-0 max-w-[86rem] content-start overflow-auto p-[clamp(0.85rem,2.4vw,1.6rem)] lg:col-start-2 lg:row-start-1"
+          data-view="saved"
+          hidden
+        >
+          <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]">
+            <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
+              Bookmarks
+            </h2>
+            <div data-saved-list></div>
+          </div>
+        </section>
+        <section
+          class="mx-auto grid w-full min-h-0 min-w-0 max-w-[86rem] content-start overflow-auto p-[clamp(0.85rem,2.4vw,1.6rem)] lg:col-start-2 lg:row-start-1"
+          data-view="basket"
+          hidden
+        >
+          <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]">
+            <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
+              Basket
+            </h2>
+            <p class="text-pretty text-ink">
+              Salt and pepper are assumed. You only add products that change the
+              dish.
+            </p>
+            <div data-basket-list></div>
+          </div>
+        </section>
+        <nav
+          class="sticky bottom-0 z-8 grid grid-flow-col auto-cols-fr border-t border-ink/10 bg-paper/88 pb-[max(0.35rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:static lg:col-start-1 lg:row-start-1 lg:min-h-dvh lg:grid-flow-row lg:content-center lg:gap-1 lg:border-t-0 lg:border-e lg:pb-3"
+        >
+          <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="home">
+            Home
+          </button>
+          <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="saved">
+            Saved
+          </button>
+          <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="basket">
+            Basket
+          </button>
+        </nav>
+      </div>
+      <dialog
+        class="m-auto max-h-[min(90dvh,52rem)] w-[min(40rem,calc(100%-1.5rem))] overflow-auto rounded-[1.25rem] border-0 bg-paper p-0 text-ink backdrop:bg-ink/45 max-sm:fixed max-sm:inset-0 max-sm:m-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:rounded-none"
+        data-detail
+      ></dialog>
+    </div>
+    <script type="module" src="/src/app.js"></script>
   </body>
-  <script>
-    const form = document.querySelector("form");
-
-    async function whenTheFormWillSubmit(event) {
-      event.preventDefault();
-      const list = document.querySelectorAll('input[type="checkbox"]:checked');
-      const ingredients = Array.from(list).map((checkbox) => checkbox.value);
-      const body = JSON.stringify(ingredients);
-      const response = await fetch("api/recipes.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body,
-      });
-      const reply = await response.json();
-      if (!response.ok) {
-        console.error(reply.error);
-        return;
-      }
-      console.log(reply.recipes);
-    }
-
-    form.addEventListener("submit", whenTheFormWillSubmit);
-  </script>
 </html>
