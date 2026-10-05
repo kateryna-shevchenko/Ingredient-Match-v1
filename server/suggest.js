@@ -9,9 +9,26 @@ export async function suggestForPantry(pantryIds, env = process.env, propose = p
   if (!pantry.length) return { status: 400, body: { error: "empty-pantry" } };
   try {
     const proposal = await propose(pantry, env);
-    const accepted = acceptProposal(pantry, proposal);
-    if (!accepted.ok) return { status: 422, body: { error: accepted.reason } };
-    return { status: 200, body: { recipe: accepted.recipe } };
+    const list = Array.isArray(proposal)
+      ? proposal
+      : Array.isArray(proposal?.recipes)
+        ? proposal.recipes
+        : [proposal];
+    const recipes = [];
+    const seen = new Set();
+    let refusal = "shape";
+    for (const item of list) {
+      const accepted = acceptProposal(pantry, item);
+      if (!accepted.ok) {
+        refusal = accepted.reason;
+        continue;
+      }
+      if (seen.has(accepted.recipe.id)) continue;
+      seen.add(accepted.recipe.id);
+      recipes.push(accepted.recipe);
+    }
+    if (!recipes.length) return { status: 422, body: { error: refusal } };
+    return { status: 200, body: { recipes } };
   } catch (error) {
     if (error instanceof ModelNotConfigured || error?.code === "not-configured") {
       return { status: 503, body: { error: "not-configured" } };

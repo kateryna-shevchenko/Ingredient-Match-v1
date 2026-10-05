@@ -261,7 +261,7 @@ async function suggest() {
   }
   suggesting = true;
   suggestButton.disabled = true;
-  setSuggestNote("Asking for a recipe…");
+  setSuggestNote("Asking for recipes…");
   try {
     const response = await fetch("/api/suggest", {
       method: "POST",
@@ -273,15 +273,20 @@ async function suggest() {
       setSuggestNote(suggestCopy[reply.error] || suggestCopy["model-failed"]);
       return;
     }
-    const accepted = acceptProposal(state.pantry, reply.recipe);
-    if (!accepted.ok) {
-      setSuggestNote(suggestCopy[accepted.reason] || suggestCopy.shape);
+    const incoming = Array.isArray(reply.recipes) ? reply.recipes : reply.recipe ? [reply.recipe] : [];
+    let acceptedAny = false;
+    for (const proposal of incoming) {
+      const accepted = acceptProposal(state.pantry, proposal);
+      if (!accepted.ok) continue;
+      acceptedAny = true;
+      if (state.proposals.some((recipe) => recipe.id === accepted.recipe.id)) continue;
+      state.proposals.push(accepted.recipe);
+    }
+    if (!acceptedAny) {
+      setSuggestNote(suggestCopy.shape);
       return;
     }
-    if (!state.proposals.some((recipe) => recipe.id === accepted.recipe.id)) {
-      state.proposals.push(accepted.recipe);
-      persist();
-    }
+    persist();
     setSuggestNote("");
     renderAll();
     root.querySelector("#results")?.scrollIntoView({

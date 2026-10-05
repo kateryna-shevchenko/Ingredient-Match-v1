@@ -39,25 +39,68 @@ test("a partial match is still a recipe, with the gap listed", () => {
 
 test("the server keeps a broken proposal off the response", async () => {
   const result = await suggestForPantry(pantry, {}, async () => ({
-    title: "",
-    ingredientIds: ["rice"],
-    steps: [],
-    minutes: 20,
-    servings: 2,
+    recipes: [
+      {
+        title: "",
+        ingredientIds: ["rice"],
+        steps: [],
+        minutes: 20,
+        servings: 2,
+      },
+    ],
   }));
   assert.equal(result.status, 422);
-  assert.equal(result.body.recipe, undefined);
+  assert.equal(result.body.recipes, undefined);
 });
 
-test("the server returns a recipe only after the gate accepts it", async () => {
+test("the server returns every recipe the gate accepts", async () => {
   const result = await suggestForPantry(pantry, {}, async () => ({
-    title: "Garlic Rice",
-    ingredientIds: ["rice", "garlic", "olive-oil", "papaya"],
-    steps: ["Boil rice 12 minutes.", "Garlic in oil 45 seconds.", "Fold together and rest 1 minute."],
-    minutes: 14,
-    servings: 2,
+    recipes: [
+      {
+        title: "Garlic Rice",
+        ingredientIds: ["rice", "garlic", "olive-oil", "papaya"],
+        steps: ["Boil rice 12 minutes.", "Garlic in oil 45 seconds.", "Fold together and rest 1 minute."],
+        minutes: 14,
+        servings: 2,
+      },
+      {
+        title: "Lemon Spinach",
+        ingredientIds: ["spinach", "lemon", "olive-oil"],
+        steps: ["Heat oil 1 minute.", "Wilt spinach 2 minutes.", "Add lemon and rest 1 minute."],
+        minutes: 8,
+        servings: 2,
+      },
+      {
+        title: "",
+        ingredientIds: ["rice"],
+        steps: [],
+        minutes: 1,
+        servings: 1,
+      },
+    ],
   }));
   assert.equal(result.status, 200);
-  assert.deepEqual(result.body.recipe.ingredientIds, ["rice", "garlic", "olive-oil"]);
-  assert.equal(typeof result.body.recipe.id, "string");
+  assert.equal(result.body.recipes.length, 2);
+  assert.deepEqual(result.body.recipes[0].ingredientIds, ["rice", "garlic", "olive-oil"]);
+  assert.notEqual(result.body.recipes[0].image, result.body.recipes[1].image);
+});
+
+test("a cheese recipe does not reuse the rice photo", () => {
+  const rice = acceptProposal(pantry, {
+    title: "Garlic Rice",
+    ingredientIds: ["rice", "garlic"],
+    steps: ["Boil 12 minutes.", "Garlic 45 seconds.", "Rest 1 minute."],
+    minutes: 14,
+    servings: 2,
+  });
+  const cheese = acceptProposal(["cottage-cheese", "flour", "sugar"], {
+    title: "Syrnyky",
+    ingredientIds: ["cottage-cheese", "flour", "sugar"],
+    steps: ["Mix 2 minutes.", "Fry 3 minutes.", "Turn and fry 2 minutes."],
+    minutes: 15,
+    servings: 2,
+  });
+  assert.equal(rice.ok, true);
+  assert.equal(cheese.ok, true);
+  assert.notEqual(rice.recipe.image, cheese.recipe.image);
 });
