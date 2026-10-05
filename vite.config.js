@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vitest/config";
+import { loadEnv } from "vite";
 import { attachSuggest } from "./server/suggest.js";
 
 function suggestPlugin() {
@@ -18,6 +19,10 @@ function suggestPlugin() {
 }
 
 export default defineConfig({
+  test: {
+    environment: "node",
+    include: ["server/**/*.test.js"],
+  },
   plugins: [tailwindcss(), suggestPlugin()],
   build: {
     rollupOptions: {

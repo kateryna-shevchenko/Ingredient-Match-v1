@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 import { acceptProposal } from "../src/accept.js";
 import { resolveIngredient } from "../src/catalog.js";
 import { suggestForPantry } from "./suggest.js";
