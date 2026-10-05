@@ -18,6 +18,7 @@
       <a
         class="absolute start-3 top-3 z-20 -translate-y-[200%] rounded-lg bg-paper px-3 py-2 focus:translate-y-0"
         href="#results"
+        data-i18n="skip"
         >Skip to recipes</a
       >
       <section class="peer grid min-h-svh bg-papaya p-0 text-paper" data-view="welcome">
@@ -29,6 +30,7 @@
               class="absolute inset-0 block size-full max-w-none object-cover object-center"
               src="/assets/welcome-produce.png"
               alt="A market spread of fruits and vegetables"
+              data-i18n-alt="welcomeAlt"
               width="1024"
               height="1024"
             />
@@ -36,13 +38,19 @@
           <div
             class="relative z-1 grid w-full max-w-md gap-3.5 justify-items-stretch rounded-[1.45rem] bg-[#a1391c] p-5 shadow-[0_22px_48px_#441d0f66] min-[40rem]:px-7 min-[40rem]:pt-6 min-[40rem]:pb-5"
           >
+            <div class="flex flex-wrap gap-2">
+              <button class="min-h-11 rounded-full border-0 bg-paper/15 px-3 text-paper" type="button" data-lang="uk">Українська</button>
+              <button class="min-h-11 rounded-full border-0 bg-paper/15 px-3 text-paper" type="button" data-lang="pl">Polski</button>
+              <button class="min-h-11 rounded-full border-0 bg-paper/15 px-3 text-paper" type="button" data-lang="en">English</button>
+            </div>
             <div>
               <h1
-                class="m-0 max-w-[10ch] text-[clamp(2.15rem,1.35rem+4.6vw,4.15rem)] leading-none font-bold tracking-tight text-paper"
+                class="m-0 max-w-[12ch] text-[clamp(2.15rem,1.35rem+4.6vw,4.15rem)] leading-none font-bold tracking-tight text-paper"
+                data-i18n="welcomeTitle"
               >
                 Cook like a chef
               </h1>
-              <p class="max-w-[26ch] text-[clamp(0.98rem,0.92rem+0.45vw,1.2rem)] text-paper/90">
+              <p class="max-w-[28ch] text-[clamp(0.98rem,0.92rem+0.45vw,1.2rem)] text-paper/90" data-i18n="welcomeText">
                 Cook professional dishes right in your kitchen.
               </p>
             </div>
@@ -51,7 +59,7 @@
               type="button"
               data-start
             >
-              Get started
+              <span data-i18n="start">Get started</span>
             </button>
           </div>
         </div>
@@ -68,20 +76,21 @@
             class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)] lg:sticky lg:top-3 lg:max-h-[calc(100svh-1.25rem)] lg:overflow-auto"
           >
             <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
-              What do you want to cook today?
+              <span data-i18n="ask">What do you want to cook today?</span>
             </h2>
             <form class="flex flex-wrap gap-2" data-add-form>
               <input
                 class="min-h-11 min-w-48 flex-1 rounded-full border-0 bg-surface px-4 text-inherit"
                 data-add-input
                 placeholder="Product"
+                data-i18n-placeholder="product"
                 autocomplete="off"
               />
               <button
                 class="min-h-11 shrink-0 rounded-full border-0 bg-roast px-4 font-semibold text-white hover:bg-papaya"
                 type="submit"
               >
-                Add
+                <span data-i18n="add">Add</span>
               </button>
             </form>
             <p class="text-muted" data-pantry-note hidden></p>
@@ -92,12 +101,12 @@
               type="button"
               data-suggest
             >
-              Make something with these
+              <span data-i18n="suggest">Make something with these</span>
             </button>
           </div>
           <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]" id="results">
             <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
-              From this kitchen
+              <span data-i18n="resultsTitle">From this kitchen</span>
             </h2>
             <p class="text-muted" data-count></p>
             <div
@@ -113,7 +122,7 @@
         >
           <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]">
             <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
-              Bookmarks
+              <span data-i18n="bookmarks">Bookmarks</span>
             </h2>
             <div data-saved-list></div>
           </div>
@@ -125,9 +134,9 @@
         >
           <div class="min-w-0 rounded-[1.15rem] bg-paper p-[clamp(0.85rem,2.4vw,1.6rem)]">
             <h2 class="mb-3 text-balance text-[clamp(1.25rem,1.05rem+1.4vw,2.1rem)] leading-tight tracking-tight">
-              Basket
+              <span data-i18n="basket">Basket</span>
             </h2>
-            <p class="text-pretty text-ink">
+            <p class="text-pretty text-ink" data-i18n="basketLead">
               Salt and pepper are assumed. You only add products that change the
               dish.
             </p>
@@ -135,16 +144,21 @@
           </div>
         </section>
         <nav
-          class="sticky bottom-0 z-8 grid grid-flow-col auto-cols-fr border-t border-ink/10 bg-paper/88 pb-[max(0.35rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:static lg:col-start-1 lg:row-start-1 lg:min-h-dvh lg:grid-flow-row lg:content-center lg:gap-1 lg:border-t-0 lg:border-e lg:pb-3"
+          class="sticky bottom-0 z-8 grid grid-cols-3 border-t border-ink/10 bg-paper/88 pb-[max(0.35rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:static lg:col-start-1 lg:row-start-1 lg:min-h-dvh lg:grid-cols-1 lg:content-center lg:gap-1 lg:border-t-0 lg:border-e lg:pb-3"
         >
+          <div class="col-span-3 flex items-center justify-center gap-2 px-3 lg:col-span-1 lg:mb-4 lg:flex-col">
+            <button class="min-h-11 border-0 bg-transparent text-muted" type="button" data-lang="uk">UA</button>
+            <button class="min-h-11 border-0 bg-transparent text-muted" type="button" data-lang="pl">PL</button>
+            <button class="min-h-11 border-0 bg-transparent text-muted" type="button" data-lang="en">EN</button>
+          </div>
           <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="home">
-            Home
+            <span data-i18n="home">Home</span>
           </button>
           <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="saved">
-            Saved
+            <span data-i18n="saved">Saved</span>
           </button>
           <button class="min-h-[3.25rem] border-0 bg-transparent text-muted hover:text-papaya" type="button" data-nav="basket">
-            Basket
+            <span data-i18n="basket">Basket</span>
           </button>
         </nav>
       </div>

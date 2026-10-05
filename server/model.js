@@ -31,7 +31,7 @@ function extractJson(text) {
   }
 }
 
-async function generate(model, key, generationConfig, pantry) {
+async function generate(model, key, generationConfig, pantry, locale) {
   return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: "POST",
     headers: {
@@ -39,7 +39,7 @@ async function generate(model, key, generationConfig, pantry) {
       "x-goog-api-key": key,
     },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: instructionsFor() }] },
+      systemInstruction: { parts: [{ text: instructionsFor(locale) }] },
       contents: [{ role: "user", parts: [{ text: `Pantry: ${pantry}.` }] }],
       generationConfig,
     }),
@@ -47,8 +47,9 @@ async function generate(model, key, generationConfig, pantry) {
   });
 }
 
-function instructionsFor() {
-  return 'You propose 10 different widely known home dishes as JSON only: {"recipes":[...]}. People should already know each one by name, the way they know syrnyky, pancakes, an omelette, or mashed potatoes. Do not invent dish names. If the pantry contains cottage cheese, egg, flour, and sugar, include Syrnyky (сирники) as one of the ten. Use as many pantry ingredients as you can, and copy those pantry ids exactly. Missing real groceries are allowed as new lowercase hyphen ids, such as banana or sour-cream. Do not invent brands or fantasy foods. Each recipe has keys title, ingredientIds, steps, minutes, servings, blurb. title is the common name. Salt and pepper are assumed and must not be listed. steps is exactly 3 short strings, and each step includes a time or temperature. Do not include an id or an image.';
+function instructionsFor(locale) {
+  const language = locale === "uk" ? "Ukrainian" : locale === "pl" ? "Polish" : "English";
+  return `You propose 10 different widely known home dishes as JSON only: {"recipes":[...]}. People should already know each one by name, the way they know syrnyky, pancakes, an omelette, or mashed potatoes. Do not invent dish names. If the pantry contains cottage cheese, egg, flour, and sugar, include Syrnyky as one of the ten. Use as many pantry ingredients as you can, and copy those pantry ids exactly. Missing real groceries are allowed as new lowercase English hyphen ids, such as banana or sour-cream. Do not invent brands or fantasy foods. Each recipe has keys title, ingredientIds, steps, minutes, servings, blurb. Write title, steps, and blurb in ${language}. ingredientIds stay English ids, never translated words. Salt and pepper are assumed and must not be listed. steps is exactly 3 short strings, and each step includes a time or temperature. Do not include an id or an image.`;
 }
 
 const SPARE_MODELS = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite"];
@@ -74,6 +75,7 @@ export async function proposeRecipe(pantryIds, env = process.env) {
   const key = env.GEMINI_API_KEY || env.GOOGLE_API_KEY;
   if (!key) throw new ModelNotConfigured();
 
+  const locale = ["uk", "pl", "en"].includes(env.RECIPE_LOCALE) ? env.RECIPE_LOCALE : "en";
   const pantry = pantryIds.map((id) => `${id} (${names.get(id) || String(id).replace(/-/g, " ")})`).join(", ");
   let lastDetail = "Every Gemini model is busy right now. Wait a minute and try again.";
 
@@ -81,7 +83,7 @@ export async function proposeRecipe(pantryIds, env = process.env) {
     const generationConfig = configFor(model);
     let response;
     try {
-      response = await generate(model, key, generationConfig, pantry);
+      response = await generate(model, key, generationConfig, pantry, locale);
     } catch {
       lastDetail = "Every Gemini model is busy right now. Wait a minute and try again.";
       continue;
@@ -91,7 +93,7 @@ export async function proposeRecipe(pantryIds, env = process.env) {
       delete generationConfig.thinkingConfig;
       generationConfig.maxOutputTokens = 4096;
       try {
-        response = await generate(model, key, generationConfig, pantry);
+        response = await generate(model, key, generationConfig, pantry, locale);
         detail = response.ok ? "" : await response.text();
       } catch {
         lastDetail = "Every Gemini model is busy right now. Wait a minute and try again.";

@@ -57,10 +57,11 @@ export function attachSuggest(middlewares, env) {
     if (url !== "/api/suggest" || req.method !== "POST") return next();
     try {
       const body = await readJsonBody(req);
-      const result = await suggestForPantry(
-        Array.isArray(body.pantryIds) ? body.pantryIds : [],
-        env,
-      );
+      const locale = ["uk", "pl", "en"].includes(body.locale) ? body.locale : "en";
+      const result = await suggestForPantry(Array.isArray(body.pantryIds) ? body.pantryIds : [], {
+        ...env,
+        RECIPE_LOCALE: locale,
+      });
       res.statusCode = result.status;
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify(result.body));
