@@ -1,11 +1,9 @@
-import { ingredients } from "../src/catalog.js";
+import { toIngredientId } from "../src/catalog.js";
 import { acceptProposal } from "../src/accept.js";
 import { ModelNotConfigured, proposeRecipe } from "./model.js";
 
-const catalogIds = new Set(ingredients.map((item) => item.id));
-
 export async function suggestForPantry(pantryIds, env = process.env, propose = proposeRecipe) {
-  const pantry = [...new Set(pantryIds.filter((id) => catalogIds.has(id)))];
+  const pantry = [...new Set(pantryIds.map((id) => toIngredientId(id)).filter(Boolean))];
   if (!pantry.length) return { status: 400, body: { error: "empty-pantry" } };
   try {
     const proposal = await propose(pantry, env);

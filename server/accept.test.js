@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { acceptProposal } from "../src/accept.js";
+import { resolveIngredient } from "../src/catalog.js";
 import { suggestForPantry } from "./suggest.js";
 
 const pantry = ["rice", "lemon", "olive-oil", "spinach", "garlic"];
@@ -81,7 +82,7 @@ test("the server returns every recipe the gate accepts", async () => {
   }));
   assert.equal(result.status, 200);
   assert.equal(result.body.recipes.length, 2);
-  assert.deepEqual(result.body.recipes[0].ingredientIds, ["rice", "garlic", "olive-oil"]);
+  assert.deepEqual(result.body.recipes[0].ingredientIds, ["rice", "garlic", "olive-oil", "papaya"]);
   assert.notEqual(result.body.recipes[0].image, result.body.recipes[1].image);
 });
 
@@ -103,4 +104,21 @@ test("a cheese recipe does not reuse the rice photo", () => {
   assert.equal(rice.ok, true);
   assert.equal(cheese.ok, true);
   assert.notEqual(rice.recipe.image, cheese.recipe.image);
+});
+
+test("any grocery name can enter the pantry", () => {
+  assert.equal(resolveIngredient("Banana").id, "banana");
+  assert.equal(resolveIngredient("банан").id, "банан");
+  assert.equal(resolveIngredient("сир").id, "cottage-cheese");
+  assert.equal(resolveIngredient("сіль").status, "assumed");
+  const result = acceptProposal(["banana", "банан"], {
+    title: "Banana Toast",
+    ingredientIds: ["banana", "банан", "salt", "honey"],
+    steps: ["Toast bread 2 minutes.", "Slice banana 1 minute.", "Honey and rest 1 minute."],
+    minutes: 5,
+    servings: 1,
+  });
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.recipe.ingredientIds, ["banana", "банан", "honey"]);
+  assert.equal(result.match.missingIds.length, 1);
 });

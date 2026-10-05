@@ -1,7 +1,5 @@
-import { ingredients } from "./catalog.js";
+import { toIngredientId } from "./catalog.js";
 import { scoreRecipe } from "./match.js";
-
-const catalogIds = new Set(ingredients.map((item) => item.id));
 const FOOD_PHOTOS = {
   "cottage-cheese": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80",
   chicken: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=900&q=80",
@@ -28,12 +26,21 @@ const FOOD_PHOTOS = {
 const PHOTO_PRIORITY = Object.keys(FOOD_PHOTOS);
 
 function pictureFor(title, ingredientIds) {
-  const options = PHOTO_PRIORITY.filter((id) => ingredientIds.includes(id));
-  if (!options.length) return FOOD_PHOTOS.egg;
   let hash = 2166136261;
   for (const char of title.toLowerCase()) {
     hash ^= char.codePointAt(0);
     hash = Math.imul(hash, 16777619);
+  }
+  const options = PHOTO_PRIORITY.filter((id) => ingredientIds.includes(id));
+  if (!options.length) {
+    const spare = [
+      FOOD_PHOTOS.egg,
+      FOOD_PHOTOS.potato,
+      FOOD_PHOTOS.tomato,
+      FOOD_PHOTOS.avocado,
+      FOOD_PHOTOS.chicken,
+    ];
+    return spare[(hash >>> 0) % spare.length];
   }
   return FOOD_PHOTOS[options[(hash >>> 0) % options.length]];
 }
@@ -62,9 +69,9 @@ export function acceptProposal(pantryIds, proposal) {
     ? proposal.steps.map((step) => String(step).trim()).filter(Boolean).slice(0, 8)
     : [];
   const ingredientIds = [];
-  for (const id of Array.isArray(proposal.ingredientIds) ? proposal.ingredientIds : []) {
-    if (id === "salt" || id === "pepper") continue;
-    if (!catalogIds.has(id) || ingredientIds.includes(id)) continue;
+  for (const raw of Array.isArray(proposal.ingredientIds) ? proposal.ingredientIds : []) {
+    const id = toIngredientId(raw);
+    if (!id || ingredientIds.includes(id)) continue;
     ingredientIds.push(id);
   }
   const minutes = Number(proposal.minutes);

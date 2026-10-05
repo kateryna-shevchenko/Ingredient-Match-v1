@@ -52,13 +52,22 @@ const aliases = {
 const byId = new Map(ingredients.map((item) => [item.id, item]));
 
 export function ingredientName(id) {
-  return byId.get(id)?.name ?? id;
+  return byId.get(id)?.name ?? String(id).replace(/-/g, " ");
+}
+
+function freeId(text) {
+  return text
+    .replace(/\s+/g, "-")
+    .replace(/[^\p{L}\p{N}-]+/gu, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40);
 }
 
 export function resolveIngredient(raw) {
-  const text = raw.trim().toLowerCase().replace(/\s+/g, " ");
-  if (!text) return { status: "empty" };
-  if (text === "salt" || text === "pepper" || text === "salt and pepper") {
+  const text = String(raw ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (!text || text.length > 40) return { status: "empty" };
+  if (text === "salt" || text === "pepper" || text === "salt and pepper" || text === "сіль" || text === "перець") {
     return { status: "assumed" };
   }
   const key = text.replace(/\s+/g, "-");
@@ -67,8 +76,15 @@ export function resolveIngredient(raw) {
   if (byId.has(key)) return { status: "ok", id: key };
   const hit =
     ingredients.find((item) => item.name === text) ||
-    ingredients.find((item) => item.name.startsWith(text)) ||
-    ingredients.find((item) => item.name.includes(text));
+    ingredients.find((item) => item.name.startsWith(text) && text.length >= 3) ||
+    ingredients.find((item) => text.length >= 3 && item.name.includes(text));
   if (hit) return { status: "ok", id: hit.id };
-  return { status: "unknown" };
+  const id = freeId(text);
+  if (!id || id === "salt" || id === "pepper") return { status: "empty" };
+  return { status: "ok", id };
+}
+
+export function toIngredientId(raw) {
+  const resolved = resolveIngredient(raw);
+  return resolved.status === "ok" ? resolved.id : "";
 }

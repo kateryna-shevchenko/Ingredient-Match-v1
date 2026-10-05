@@ -307,8 +307,6 @@ form.addEventListener("submit", (event) => {
   pantryNote = "";
   if (resolved.status === "assumed") {
     pantryNote = "Salt and pepper are already assumed.";
-  } else if (resolved.status === "unknown") {
-    pantryNote = "That product is not in the catalog yet.";
   } else if (resolved.status === "ok" && !state.pantry.includes(resolved.id)) {
     state.pantry.push(resolved.id);
     persist();
