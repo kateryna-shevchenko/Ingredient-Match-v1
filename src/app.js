@@ -29,7 +29,7 @@ const suggestCopy = {
   "empty-pantry": "Add what you already have first.",
   steps: "That suggestion had no cooking times, so it stayed off the page.",
   shape: "That suggestion did not match the recipe contract, so it stayed off the page.",
-  "not-configured": "OpenAI is not connected yet. Set OPENAI_API_KEY on the server.",
+  "not-configured": "Gemini is not connected yet. Set GEMINI_API_KEY on the server.",
   "model-failed": "The model could not answer. The page kept the recipes already in the kitchen.",
   "bad-request": "The kitchen could not read that request.",
 };

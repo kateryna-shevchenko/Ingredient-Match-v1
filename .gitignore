@@ -2,3 +2,5 @@ debug
 cursor-import
 node_modules
 dist
+.env
+.vercel
