@@ -268,7 +268,14 @@ async function suggest() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pantryIds: state.pantry }),
     });
-    const reply = await response.json();
+    const raw = await response.text();
+    let reply;
+    try {
+      reply = JSON.parse(raw);
+    } catch {
+      setSuggestNote("This address has no recipe model yet. Open the latest Preview link.");
+      return;
+    }
     if (!response.ok) {
       setSuggestNote(suggestCopy[reply.error] || suggestCopy["model-failed"]);
       return;
