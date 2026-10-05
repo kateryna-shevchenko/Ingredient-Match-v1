@@ -31,7 +31,7 @@ export async function suggestForPantry(pantryIds, env = process.env, propose = p
     if (error instanceof ModelNotConfigured || error?.code === "not-configured") {
       return { status: 503, body: { error: "not-configured" } };
     }
-    return { status: 502, body: { error: "model-failed" } };
+    return { status: 502, body: { error: "model-failed", detail: error?.detail || "" } };
   }
 }
 

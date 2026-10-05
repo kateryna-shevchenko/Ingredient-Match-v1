@@ -1,3 +1,8 @@
 {
-  "framework": "vite"
+  "framework": "vite",
+  "functions": {
+    "api/suggest.js": {
+      "maxDuration": 60
+    }
+  }
 }

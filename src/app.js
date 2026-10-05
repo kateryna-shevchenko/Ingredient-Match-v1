@@ -253,6 +253,18 @@ root.addEventListener("click", (event) => {
   if (target.hasAttribute("data-suggest")) suggest();
 });
 
+function failureNote(reply) {
+  if (typeof reply?.detail === "string" && reply.detail) return reply.detail;
+  if (typeof reply?.error === "string" && suggestCopy[reply.error]) return suggestCopy[reply.error];
+  const code = reply?.error?.code || "";
+  const message = reply?.error?.message || "";
+  if (code === "FUNCTION_INVOCATION_TIMEOUT" || /timeout/i.test(message)) {
+    return "The kitchen ran out of time while writing the recipes. Try again.";
+  }
+  if (typeof message === "string" && message) return message;
+  return suggestCopy["model-failed"];
+}
+
 async function suggest() {
   if (suggesting) return;
   if (!state.pantry.length) {
@@ -277,7 +289,7 @@ async function suggest() {
       return;
     }
     if (!response.ok) {
-      setSuggestNote(suggestCopy[reply.error] || suggestCopy["model-failed"]);
+      setSuggestNote(failureNote(reply));
       return;
     }
     const incoming = Array.isArray(reply.recipes) ? reply.recipes : reply.recipe ? [reply.recipe] : [];

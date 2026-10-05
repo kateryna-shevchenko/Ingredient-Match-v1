@@ -59,32 +59,53 @@ export async function proposeRecipe(pantryIds, env = process.env) {
   const generationConfig = {
     temperature: 0.7,
     responseMimeType: "application/json",
-    maxOutputTokens: 16384,
+    maxOutputTokens: 8192,
     thinkingConfig: model.startsWith("gemini-2.") ? { thinkingBudget: 0 } : { thinkingLevel: "minimal" },
   };
 
   let response = await generate(model, key, generationConfig, pantry);
-  if (!response.ok) {
-    const detail = await response.text();
-    if (response.status === 400 && /thinking/i.test(detail)) {
-      delete generationConfig.thinkingConfig;
-      response = await generate(model, key, generationConfig, pantry);
-    } else {
-      console.error("gemini", response.status, detail.slice(0, 240));
-      throw new Error("model-failed");
-    }
+  if (!response.ok && response.status === 400) {
+    delete generationConfig.thinkingConfig;
+    generationConfig.maxOutputTokens = 4096;
+    response = await generate(model, key, generationConfig, pantry);
   }
   if (!response.ok) {
-    console.error("gemini", response.status, (await response.text()).slice(0, 240));
-    throw new Error("model-failed");
+    const detail = await response.text();
+    const error = new Error("model-failed");
+    error.detail = geminiDetail(response.status, detail);
+    throw error;
   }
 
   const payload = await response.json();
   const parts = payload?.candidates?.[0]?.content?.parts ?? [];
-  const text = parts
-    .filter((part) => part.text && !part.thought)
-    .map((part) => part.text)
-    .join("");
-  if (!text) throw new Error("model-shape");
-  return extractJson(text);
+  const visible = parts.filter((part) => part.text && !part.thought).map((part) => part.text).join("");
+  const text = visible || parts.map((part) => part.text || "").join("");
+  if (!text) {
+    const error = new Error("model-shape");
+    const reason = payload?.candidates?.[0]?.finishReason || payload?.promptFeedback?.blockReason || "empty";
+    error.detail = `The model stopped before writing recipes (${reason}).`;
+    throw error;
+  }
+  try {
+    return extractJson(text);
+  } catch (error) {
+    error.detail = "The model answer was not a recipe list.";
+    throw error;
+  }
+}
+
+function geminiDetail(status, body) {
+  let message = body;
+  try {
+    const parsed = JSON.parse(body);
+    message = parsed?.error?.message || parsed?.error?.status || body;
+  } catch {
+    message = body;
+  }
+  const text = String(message).replace(/\s+/g, " ").slice(0, 160);
+  if (status === 429 || /quota|rate limit|resource_exhausted/i.test(text)) {
+    return "Gemini's free limit is used up for now. Wait a minute and try again.";
+  }
+  if (status === 404) return "The model name on the server was not found. Check GEMINI_MODEL.";
+  return text || `Gemini returned ${status}.`;
 }
